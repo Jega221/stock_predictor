@@ -1,103 +1,121 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState, FormEvent } from 'react';
+import Image from 'next/image';
+import Loader from '@/components/Loader';
+
+export default function HomePage() {
+  const [input, setInput]       = useState('');
+  const [tickers, setTickers]   = useState<string[]>([]);
+  const [loading, setLoading]   = useState(false);
+  const [report, setReport]     = useState<string | null>(null);
+  const [err, setErr]           = useState<string | null>(null);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const val = input.trim().toUpperCase();
+    if (val.length >= 3 && tickers.length < 3 && !tickers.includes(val)) {
+      setTickers([...tickers, val]);
+    }
+    setInput('');
+  };
+
+  async function generateReport() {
+    setLoading(true);
+    setReport(null);
+    setErr(null);
+    try {
+      const res = await fetch('/api/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tickers })
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Unknown error');
+      setReport(json.report);
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gradient-to-br from-green-100 to-red-100 flex items-center justify-center p-6">
+      <div className="bg-white w-full max-w-sm shadow-xl rounded-md overflow-hidden">
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        {/* header */}
+        <div className="bg-black text-white py-4 px-6 flex items-center justify-center gap-2">
+          <Image src="/dave-face.png" alt="Dave" width={40} height={40} />
+          <h1 className="text-xl font-semibold">
+            Dodgy&nbsp;<span className="text-pink-400">Dave&apos;s</span>
+          </h1>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        <p className="text-center text-lg mt-2 text-pink-500 font-bold">
+          Stock&nbsp;Predictions
+        </p>
+
+        {/* form */}
+        <p className="text-center text-sm text-gray-800 px-6 py-4">
+          Add up to <strong>3</strong> stock tickers below 👇
+        </p>
+
+        <form onSubmit={handleSubmit} className="flex items-center gap-1 px-6 mb-4">
+          <input
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder="MSFT"
+            className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-900"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <button type="submit" className="bg-black text-white p-2 rounded-md hover:bg-gray-800">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </form>
+
+        {/* ticker chips */}
+        <div className="px-6 pb-2 min-h-[46px]">
+          {tickers.length === 0 ? (
+            <p className="text-center text-gray-500 text-sm">Your tickers will appear here…</p>
+          ) : (
+            <div className="flex flex-wrap gap-1">
+              {tickers.map(t => (
+                <span key={t} className="bg-gray-200 text-black font-mono px-2 py-1 text-xs rounded">{t}</span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* generate */}
+        <div className="px-6 pb-4">
+          <button
+            onClick={generateReport}
+            disabled={tickers.length === 0 || loading}
+            className="w-full bg-green-400 text-white font-semibold py-2 rounded-md disabled:opacity-50 hover:bg-green-500 transition"
+          >
+            GENERATE REPORT
+          </button>
+        </div>
+
+        {/* loader / error / report */}
+        {loading && <Loader msg="Summoning Dave’s crystal ball…" />}
+        {err && <p className="text-red-600 text-center text-sm p-4">{err}</p>}
+        {report && (
+          <div className="px-6 pb-6">
+            <h2 className="font-semibold mb-2">Your Report 😜</h2>
+            <p className="text-sm whitespace-pre-line">{report}</p>
+          </div>
+        )}
+
+        <p className="text-center text-xs italic text-gray-500 pb-2">
+          Always correct 15 % of the time!
+        </p>
+        <footer className="text-center text-xs text-gray-500 py-4">
+          © This is <u>not</u> real financial advice!
+        </footer>
+      </div>
     </div>
   );
 }
