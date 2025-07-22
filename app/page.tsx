@@ -33,8 +33,12 @@ export default function HomePage() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Unknown error');
       setReport(json.report);
-    } catch (e: any) {
-      setErr(e.message);
+    } catch (e: unknown) { // Change 'any' to 'unknown' here
+      if (e instanceof Error) { // Best practice: Check if it's an Error instance
+        setErr(e.message);
+      } else {
+        setErr('An unexpected error occurred.'); // Fallback for other types of errors
+      }
     } finally {
       setLoading(false);
     }
