@@ -34,17 +34,21 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: 'system',
-          content: 
+          content:
             'You are a trading guru. Using the JSON data supplied, write ≤150 words describing performance of each stock and recommend buy / hold / sell.'
         },
-        { role: 'user', 
+        { role: 'user',
           content: rawData.join('\n\n') }
       ]
     });
 
     return NextResponse.json({ report: completion.choices[0].message.content });
-  } catch (err: any) {
+  } catch (err: unknown) { // Changed from 'any' to 'unknown'
     console.error(err);
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    // You might want to refine the error message based on the type of 'err'
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'An unknown server error occurred' }, { status: 500 });
   }
 }
