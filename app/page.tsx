@@ -107,16 +107,16 @@ export default function HomePage() {
         {loading && <Loader msg="Summoning Dave’s crystal ball…" />}
         {err && <p className="text-red-600 text-center text-sm p-4">{err}</p>}
         {report && (
-          <div className="px-6 pb-6">
+          <div className="px-6 pb-6 text-gray-500">
             <h2 className="font-semibold mb-2">Your Report 😜</h2>
             <p className="text-sm whitespace-pre-line">{report}</p>
           </div>
         )}
 
-        <p className="text-center text-xs italic text-gray-500 pb-2">
+        <p className="text-center text-xs italic text-gray-600 pb-2">
           Always correct 15 % of the time!
         </p>
-        <footer className="text-center text-xs text-gray-500 py-4">
+        <footer className="text-center text-xs text-gray-600 py-4">
           © This is <u>not</u> real financial advice!
         </footer>
       </div>
