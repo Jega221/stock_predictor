@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500&family=Fragment+Mono&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-display: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-logo: 'Inter Tight', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono-label: 'Fragment Mono', ui-monospace, Consolas, monospace;
+}
+
+:root {
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: #08090b;
+}
+
+p {
+  margin: 0;
+}
